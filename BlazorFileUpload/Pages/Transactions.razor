@@ -14,7 +14,7 @@
 <div class="card mb-2">
     <div class="card-body d-flex flex-row">
         <span class="flex-fill fw-bolder text-end p-1">Upload CSV: </span>
-        <InputFile class="form-control form-control-sm w-25" OnChange="HandleFileUpload"/>
+        <InputFile class="form-control form-control-sm w-25" OnChange="HandleFileUpload" accept=".csv" />
     </div>
 </div>
 <div class="card">
@@ -71,15 +71,42 @@
         if (e.File is not null)
         {
             var file = e.File;
+            if (file.Size > 1048576)
+            {
+                // File size exceeds the limit, return a Bad Request response
+                await js.InvokeVoidAsync("alert", "File size exceeds 1MB limit. Please upload a smaller file.");
+                return;
+            }
+
             var config = new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false };
             using (var reader = new StreamReader(file.OpenReadStream(maxAllowedSize: 1048576)))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                var transactions = await csv.GetRecordsAsync<Transaction>().ToListAsync();
-                await appDbContext.Transactions.AddRangeAsync(transactions);
-                await appDbContext.SaveChangesAsync();
-                await LoadTransactions();
-                await js.InvokeVoidAsync("alert", "Csv added successfully!");
+                try
+                {
+                    var transactions = await csv.GetRecordsAsync<Transaction>().ToListAsync();
+                    if (transactions == null || !transactions.Any())
+                    {
+                        // No valid records found in the CSV, return a Bad Request response
+                        await js.InvokeVoidAsync("alert", "No valid records found in the CSV file.");
+                        return;
+                    }
+
+                    // Add valid transactions to the database
+                    await appDbContext.Transactions.AddRangeAsync(transactions);
+                    await appDbContext.SaveChangesAsync();
+
+                    // Reload transactions
+                    await LoadTransactions();
+
+                    // File uploaded successfully, return an HTTP Code 200
+                    await js.InvokeVoidAsync("alert", "Csv added successfully!");
+                }
+                catch (Exception ex)
+                {
+                    // Exception occurred during processing, return a Bad Request response
+                    await js.InvokeVoidAsync("alert", "An error occurred while processing the CSV file. Please try again later.");
+                }
             }
         }
     }
