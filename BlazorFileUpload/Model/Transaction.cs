@@ -17,7 +17,7 @@ namespace BlazorFileUpload.Model
         [Column("Quantity")]
         [Name("Quantity")]
         [Required]
-        public long Quantity { get; set; }
+        public int Quantity { get; set; }
 
         [Column("Amount")]
         [Name("Amount")]
