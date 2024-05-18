@@ -1,6 +1,7 @@
 ﻿@page "/transactions"
 @using BlazorFileUpload.Data
 @using BlazorFileUpload.Model
+@using BlazorFileUpload.Services;
 @using CsvHelper.Configuration;
 @using CsvHelper;
 @using CsvHelper.TypeConversion;
@@ -8,6 +9,7 @@
 @using System.Globalization;
 @inject AppDbContext appDbContext
 @inject IJSRuntime js
+@inject TransactionFileService TransactionFileService
 
 <PageTitle>Transactions</PageTitle>
 
@@ -20,6 +22,11 @@
 <div class="card">
     <div class="card-body p-0">
         <span class="flex-fill fw-bolder">Transactions</span>
+    </div>
+    <div class="form-group">
+        <label for="symbol">Symbol:</label>
+        <input type="text" id="symbol" @bind="symbol" class="form-control" />
+        <button class="btn btn-primary mt-2" @onclick="GetItemsBySymbol">Get Items by Symbol</button>
     </div>
     <table class="table table-striped mb-0">
         <thead>
@@ -55,7 +62,8 @@
     </table>
 </div>
 @code {
-    private List<Transaction>? transactionList = null;
+    private List<Transaction>? transactionList = new();
+    private string symbol;
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender)
@@ -110,5 +118,20 @@
             }
         }
     }
-    
+    private async Task GetItemsBySymbol() {
+        try
+        {
+            var transactions = await TransactionFileService.GetItemsBySymbol(symbol);
+            transactionList = transactions?.ToList() ?? new List<Transaction>();
+        }
+        catch (HttpRequestException ex)
+        {
+            await js.InvokeVoidAsync("alert", $"Failed to fetch transactions: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeVoidAsync("alert", $"An error occurred: {ex.Message}");
+        }
+    }
 }
+
