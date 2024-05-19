@@ -29,7 +29,18 @@ namespace BlazorFileUpload.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred while fetching transactions by orderSide: {ex.Message}");
+                Console.WriteLine($"Error occurred while fetching transactions by order side: {ex.Message}");
+                return new List<Transaction>();
+            }
+        }  
+        public async Task<List<Transaction>> GetItemsByOrderStatus(string orderStatus) {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<Transaction>>($"api/transaction/GetItemsByOrderStatus?orderStatus={orderStatus}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while fetching transactions by order status: {ex.Message}");
                 return new List<Transaction>();
             }
         }
