@@ -6,8 +6,7 @@ namespace BlazorFileUpload.Services
     public class TransactionFileService
     {
         private readonly HttpClient _httpClient;
-        public TransactionFileService(HttpClient httpClient)
-        {
+        public TransactionFileService(HttpClient httpClient) {
             _httpClient = httpClient;
         }
 
@@ -32,7 +31,7 @@ namespace BlazorFileUpload.Services
                 Console.WriteLine($"Error occurred while fetching transactions by order side: {ex.Message}");
                 return new List<Transaction>();
             }
-        }  
+        }
         public async Task<List<Transaction>> GetItemsByOrderStatus(string orderStatus) {
             try
             {
@@ -44,6 +43,12 @@ namespace BlazorFileUpload.Services
                 return new List<Transaction>();
             }
         }
+        public async Task<IEnumerable<Transaction>> GetItemsByDateRange(string startDate, string endDate) {
+            var response = await _httpClient.GetAsync($"api/transactions/byDateRange?startDate={Uri.EscapeDataString(startDate)}&endDate={Uri.EscapeDataString(endDate)}");
+            response.EnsureSuccessStatusCode();
 
+            var result = await response.Content.ReadFromJsonAsync<IEnumerable<Transaction>>();
+            return result;
+        }
     }
 }
