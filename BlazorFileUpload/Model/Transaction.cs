@@ -30,6 +30,11 @@ namespace BlazorFileUpload.Model
         [StringLength(100)]
         public string Name { get; set; }
 
+        [Column("TransactionDate")]
+        [Name("TransactionDate")]
+        [Required]
+        public DateTimeOffset TransactionDate { get; set; }
+
         [Column("Symbol")]
         [Name("Symbol")]
         [Required]

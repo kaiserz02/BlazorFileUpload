@@ -45,12 +45,25 @@
                         <input type="text" id="orderStatus" @bind="orderStatus" class="form-control" placeholder="Enter Order Status" />
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="start_date" class="form-label">Start Date:</label>
+                        <input type="datetime-local" id="start_date" @bind="startDate" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="end_date" class="form-label">End Date:</label>
+                        <input type="datetime-local" id="end_date" @bind="endDate" class="form-control" />
+                    </div>
+                </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6 d-flex justify-content-start">
                     <button class="btn btn-primary me-2" @onclick="GetItemsBySymbol">Get Items by Symbol</button>
                     <button class="btn btn-primary me-2" @onclick="GetItemsByOrderSide">Get Items by Order Side</button>
-                    <button class="btn btn-primary" @onclick="GetItemsByOrderSide">Get Items by Order Status</button>
+                    <button class="btn btn-primary me-2" @onclick="GetItemsByOrderSide">Get Items by Order Status</button>               
+                    <button class="btn btn-primary" @onclick="GetItemsByDateRange">Get Items by Date Range</button>
                 </div>
                 <div class="col-md-6 d-flex justify-content-end">
                     <button class="btn btn-secondary" @onclick="LoadTransactions">Refresh Table</button>
@@ -64,7 +77,7 @@
                         <th>Quantity</th>
                         <th>Amount</th>
                         <th>Name</th>
-                        @* <th>Transaction Date</th> *@
+                        <th>Transaction Date</th>
                         <th>Symbol</th>
                         <th>Order Side</th>
                         <th>Order Status</th>
@@ -80,7 +93,7 @@
                                 <td>@transaction.Quantity</td>
                                 <td>@transaction.Amount</td>
                                 <td>@transaction.Name</td>
-                                @* <td>@transaction.TransactionDate</td> *@
+                                <td>@transaction.TransactionDate</td>
                                 <td>@transaction.Symbol</td>
                                 <td>@transaction.OrderSide</td>
                                 <td>@transaction.OrderStatus</td>
@@ -104,6 +117,8 @@
     private string symbol;
     private string orderSide;
     private string orderStatus;
+    private DateTimeOffset startDate = DateTime.Now;
+    private DateTimeOffset endDate = DateTime.Now;
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender)
@@ -166,11 +181,11 @@
         }
         catch (HttpRequestException ex)
         {
-            await js.InvokeVoidAsync("alert", $"Failed to fetch transactions: {ex.Message}");
+            Console.WriteLine($"Failed to fetch transactions: {ex.Message}");
         }
         catch (Exception ex)
         {
-            await js.InvokeVoidAsync("alert", $"An error occurred: {ex.Message}");
+            Console.WriteLine($"An error occurred: {ex.Message}");
         }
     }   
     private async Task GetItemsByOrderSide() {
@@ -181,11 +196,11 @@
         }
         catch (HttpRequestException ex)
         {
-            await js.InvokeVoidAsync("alert", $"Failed to fetch transactions: {ex.Message}");
+            Console.WriteLine($"Failed to fetch transactions: {ex.Message}");
         }
         catch (Exception ex)
         {
-            await js.InvokeVoidAsync("alert", $"An error occurred: {ex.Message}");
+            Console.WriteLine($"An error occurred: {ex.Message}");
         }
     }   
     private async Task GetItemsByOrderStatus() {
@@ -196,12 +211,33 @@
         }
         catch (HttpRequestException ex)
         {
-            await js.InvokeVoidAsync("alert", $"Failed to fetch transactions: {ex.Message}");
+            Console.WriteLine($"Failed to fetch transactions: {ex.Message}");
         }
         catch (Exception ex)
         {
-            await js.InvokeVoidAsync("alert", $"An error occurred: {ex.Message}");
+            Console.WriteLine($"An error occurred: {ex.Message}");
         }
     }
+    private async Task GetItemsByDateRange() {
+        try
+        {
+
+            var formattedStartDate = startDate.ToString("dd/MM/yyyyTHH:mm:sszzz");
+            var formattedEndDate = endDate.ToString("dd/MM/yyyyTHH:mm:sszzz");
+
+
+            var transactions = await TransactionFileService.GetItemsByDateRange(formattedStartDate, formattedEndDate);
+            transactionList = transactions?.ToList() ?? new List<Transaction>();
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Failed to fetch transactions: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+
 }
 
