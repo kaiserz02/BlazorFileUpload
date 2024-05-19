@@ -38,12 +38,19 @@
                         <label for="order_side" class="form-label">Order Side:</label>
                         <input type="text" id="order_side" @bind="orderSide" class="form-control" placeholder="Enter Order Side" />
                     </div>
+                </div>         
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="orderStatus" class="form-label">Order Status:</label>
+                        <input type="text" id="orderStatus" @bind="orderStatus" class="form-control" placeholder="Enter Order Status" />
+                    </div>
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6 d-flex justify-content-start">
                     <button class="btn btn-primary me-2" @onclick="GetItemsBySymbol">Get Items by Symbol</button>
-                    <button class="btn btn-primary" @onclick="GetItemsByOrderSide">Get Items by Order Side</button>
+                    <button class="btn btn-primary me-2" @onclick="GetItemsByOrderSide">Get Items by Order Side</button>
+                    <button class="btn btn-primary" @onclick="GetItemsByOrderSide">Get Items by Order Status</button>
                 </div>
                 <div class="col-md-6 d-flex justify-content-end">
                     <button class="btn btn-secondary" @onclick="LoadTransactions">Refresh Table</button>
@@ -96,6 +103,7 @@
     private List<Transaction>? transactionList = new();
     private string symbol;
     private string orderSide;
+    private string orderStatus;
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender)
@@ -169,6 +177,21 @@
         try
         {
             var transactions = await TransactionFileService.GetItemsByOrderSide(orderSide);
+            transactionList = transactions?.ToList() ?? new List<Transaction>();
+        }
+        catch (HttpRequestException ex)
+        {
+            await js.InvokeVoidAsync("alert", $"Failed to fetch transactions: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await js.InvokeVoidAsync("alert", $"An error occurred: {ex.Message}");
+        }
+    }   
+    private async Task GetItemsByOrderStatus() {
+        try
+        {
+            var transactions = await TransactionFileService.GetItemsByOrderStatus(orderStatus);
             transactionList = transactions?.ToList() ?? new List<Transaction>();
         }
         catch (HttpRequestException ex)

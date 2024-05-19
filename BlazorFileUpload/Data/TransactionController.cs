@@ -52,7 +52,29 @@ namespace BlazorFileUpload.Data
                 }
                 else
                 {
-                    return NotFound(new { StatusCode = 404, Message = "No data found for symbol: " + orderSide });
+                    return NotFound(new { StatusCode = 404, Message = "No data found for order side: " + orderSide });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { StatusCode = 500, Message = "Internal server error: " + ex.Message });
+            }
+        }
+        [HttpGet("GetItemsByOrderStatus")]
+        public async Task<IActionResult> GetItemsByOrderStatus(string orderStatus) {
+            try
+            {
+                var transactions = await _context.Transactions
+                .Where(t => t.OrderStatus == orderStatus)
+                .ToListAsync();
+
+                if (transactions.Any())
+                {
+                    return Ok(transactions);
+                }
+                else
+                {
+                    return NotFound(new { StatusCode = 404, Message = "No data found for order status: " + orderStatus });
                 }
             }
             catch (Exception ex)
