@@ -22,6 +22,17 @@ namespace BlazorFileUpload.Services
                 return new List<Transaction>();
             }
         }
+        public async Task<List<Transaction>> GetItemsByOrderSide(string orderSide) {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<Transaction>>($"api/transaction/GetItemsByOrderSide?orderSide={orderSide}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while fetching transactions by orderSide: {ex.Message}");
+                return new List<Transaction>();
+            }
+        }
 
     }
 }
