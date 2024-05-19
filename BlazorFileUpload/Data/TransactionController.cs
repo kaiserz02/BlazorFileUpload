@@ -11,25 +11,55 @@ namespace BlazorFileUpload.Data
     public class TransactionController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public TransactionController(AppDbContext context)
-        {
+        public TransactionController(AppDbContext context) {
             _context = context;
         }
 
         [HttpGet("GetItemsBySymbol")]
         public async Task<ActionResult<List<Transaction>>> GetItemsBySymbol(string symbol) {
-            var transactions = await _context.Transactions
+            try
+            {
+                var transactions = await _context.Transactions
                 .Where(t => t.Symbol == symbol)
                 .ToListAsync();
 
-            if (transactions.Any())
-            {
-                return Ok(transactions);
+                if (transactions.Any())
+                {
+                    return Ok(transactions);
+                }
+                else
+                {
+                    return NotFound(new { StatusCode = 404, Message = "No data found for symbol: " + symbol });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return NotFound(new { StatusCode = 404, Message = "No data found for symbol: " + symbol });
+                return StatusCode(500, new { StatusCode = 500, Message = "Internal server error: " + ex.Message });
             }
         }
+
+        [HttpGet("GetItemsByOrderSide")]
+        public async Task<IActionResult> GetItemsByOrderSide(string orderSide) {
+            try
+            {
+                var transactions = await _context.Transactions
+                .Where(t => t.OrderSide == orderSide)
+                .ToListAsync();
+
+                if (transactions.Any())
+                {
+                    return Ok(transactions);
+                }
+                else
+                {
+                    return NotFound(new { StatusCode = 404, Message = "No data found for symbol: " + orderSide });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { StatusCode = 500, Message = "Internal server error: " + ex.Message });
+            }
+        }
+
     }
 }
