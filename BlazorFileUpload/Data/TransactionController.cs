@@ -15,7 +15,7 @@ namespace BlazorFileUpload.Data
             _context = context;
         }
 
-        [HttpGet("GetItemsBySymbol")]
+        [HttpGet("bySymbol")]
         public async Task<ActionResult<List<Transaction>>> GetItemsBySymbol(string symbol) {
             try
             {
@@ -38,7 +38,7 @@ namespace BlazorFileUpload.Data
             }
         }
 
-        [HttpGet("GetItemsByOrderSide")]
+        [HttpGet("byOrderSide")]
         public async Task<IActionResult> GetItemsByOrderSide(string orderSide) {
             try
             {
@@ -60,7 +60,7 @@ namespace BlazorFileUpload.Data
                 return StatusCode(500, new { StatusCode = 500, Message = "Internal server error: " + ex.Message });
             }
         }
-        [HttpGet("GetItemsByOrderStatus")]
+        [HttpGet("byOrderStatus")]
         public async Task<IActionResult> GetItemsByOrderStatus(string orderStatus) {
             try
             {

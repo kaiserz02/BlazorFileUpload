@@ -14,7 +14,7 @@ namespace BlazorFileUpload.Services
         public async Task<List<Transaction>> GetItemsBySymbol(string symbol) {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Transaction>>($"api/transaction/GetItemsBySymbol?symbol={symbol}");
+                return await _httpClient.GetFromJsonAsync<List<Transaction>>($"api/transaction/bySymbol?symbol={symbol}");
             }
             catch (Exception ex)
             {
@@ -25,7 +25,7 @@ namespace BlazorFileUpload.Services
         public async Task<List<Transaction>> GetItemsByOrderSide(string orderSide) {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Transaction>>($"api/transaction/GetItemsByOrderSide?orderSide={orderSide}");
+                return await _httpClient.GetFromJsonAsync<List<Transaction>>($"api/transaction/byOrderSide?orderSide={orderSide}");
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ namespace BlazorFileUpload.Services
         public async Task<List<Transaction>> GetItemsByOrderStatus(string orderStatus) {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Transaction>>($"api/transaction/GetItemsByOrderStatus?orderStatus={orderStatus}");
+                return await _httpClient.GetFromJsonAsync<List<Transaction>>($"api/transaction/byOrderStatus?orderStatus={orderStatus}");
             }
             catch (Exception ex)
             {
