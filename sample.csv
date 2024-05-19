@@ -1,0 +1,4 @@
+ReferenceNumber,Quantity,Amount,Name,Symbol,OrderSide,OrderStatus,TransactionDate
+REF-12345,10,123.45,John Doe,AAPL,Buy,Open,2024-05-18T09:45:00-07:00
+REF-98765,25,567.89,Jane Smith,MSFT,Sell,Cancelled,2024-05-17T03:35:00-07:01
+REF-00001,1,9.99,New User,GOOG,Buy,Cancelled,2024-05-20T02:45:03-07:02
